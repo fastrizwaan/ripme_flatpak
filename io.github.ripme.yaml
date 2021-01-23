@@ -15,6 +15,7 @@ finish-args:
 - --share=network
 - --env=PATH=/usr/bin:/app/bin:/app/jre/bin
 - --socket=pulseaudio
+- --filesystem=xdg-config/ripme:create
 - --filesystem=xdg-download
 
 modules:
@@ -32,14 +33,18 @@ modules:
 - name: ripme
   buildsystem: simple
   build-commands:
-  - mkdir -p /app/share/
-
+  - mkdir -p /app/ripme_1.7.4
   - install -Dm644 ripme.jar /app/ripme_1.7.4/vocab.jar
-  # We need writable db.txt, so we copy it to ~/.ripme on 1st run and check always on run
-  - echo "java -jar /app/ripme_1.7.4/vocab.jar" > io.github.ripme.sh
+
+  # history.json file at ~/.config/ripme on 1st run and check always on run
+  - echo "if [ ! -f ~/.config/ripme/history.json ]; then
+             echo '[]' > ~/.config/ripme/history.json;
+          fi;
+          
+          java -jar /app/ripme_1.7.4/vocab.jar" > io.github.ripme.sh;
          
   - install -Dm755  io.github.ripme.sh /app/bin/io.github.ripme.sh
-
+  
   # Icon and Desktop
   - mkdir -p /app/share/icons/hicolor/128x128/apps
   - mkdir -p /app/share/applications
