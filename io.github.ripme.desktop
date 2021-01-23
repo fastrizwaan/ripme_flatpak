@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Ripme
+Comment=Album Ripper
+Exec=io.github.ripme.sh
+Icon=io.github.ripme
+Terminal=false
+Categories=Multimedia;

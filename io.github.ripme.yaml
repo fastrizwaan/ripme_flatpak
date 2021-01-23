@@ -1,0 +1,60 @@
+# flatpak install org.freedesktop.Sdk/x86_64/20.08 runtime/org.freedesktop.Sdk.Extension.openjdk8/x86_64/20.08
+app-id: io.github.ripme
+runtime: org.freedesktop.Platform
+runtime-version: '20.08'
+sdk: org.freedesktop.Sdk
+command: io.github.ripme.sh
+sdk-extensions:
+- org.freedesktop.Sdk.Extension.openjdk8
+
+finish-args:
+- --socket=wayland
+- --socket=x11
+- --share=ipc
+- --device=dri
+- --share=network
+- --env=PATH=/usr/bin:/app/bin:/app/jre/bin
+- --socket=pulseaudio
+- --filesystem=xdg-download
+
+modules:
+- name: openjdk
+  buildsystem: simple
+  build-commands:
+    - /usr/lib/sdk/openjdk8/install.sh
+
+- name: xrandr
+  sources:
+  - type: archive
+    url: https://xorg.freedesktop.org/archive/individual/app/xrandr-1.5.0.tar.gz
+    sha256: ddfe8e7866149c24ccce8e6aaa0623218ae19130c2859cadcaa4228d8bb4a46d
+
+- name: ripme
+  buildsystem: simple
+  build-commands:
+  - mkdir -p /app/share/
+
+  - install -Dm644 ripme.jar /app/ripme_1.7.4/vocab.jar
+  # We need writable db.txt, so we copy it to ~/.ripme on 1st run and check always on run
+  - echo "java -jar /app/ripme_1.7.4/vocab.jar" > io.github.ripme.sh
+         
+  - install -Dm755  io.github.ripme.sh /app/bin/io.github.ripme.sh
+
+  # Icon and Desktop
+  - mkdir -p /app/share/icons/hicolor/128x128/apps
+  - mkdir -p /app/share/applications
+  - install -Dm644 io.github.ripme.desktop /app/share/applications
+  - install -Dm644 io.github.ripme.png     /app/share/icons/hicolor/128x128/apps
+  
+  sources:
+  - type: file
+    url: https://github.com/RipMeApp/ripme/releases/download/1.7.94/ripme.jar
+    sha256: 1ebe144d0f294c4e8b482742a2588201f8b962fbcebbbd109627e1fc9e2b6d94
+
+  - type: file
+    path: io.github.ripme.desktop
+
+  - type: file
+    path: io.github.ripme.png
+
+
